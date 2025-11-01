@@ -453,57 +453,16 @@ const EventsGallery = () => {
         {/* Events Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredEvents.map((event) => (
-            <Card 
+            <div 
               key={event.id} 
-              className="group hover:shadow-xl transition-all duration-300 cursor-pointer hover-lift overflow-hidden"
-              onClick={() => navigate('/events')}
+              className="group overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-all duration-300"
             >
-              <div className="relative h-48 overflow-hidden">
-                <img 
-                  src={event.image} 
-                  alt={event.title}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute top-3 right-3">
-                  <Badge className="bg-primary/90 text-primary-foreground">
-                    {event.category}
-                  </Badge>
-                </div>
-              </div>
-              
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg line-clamp-2 group-hover:text-primary transition-colors">
-                  {event.title}
-                </CardTitle>
-                <CardDescription className="flex items-center gap-2 text-sm">
-                  <Calendar className="w-4 h-4" />
-                  {event.date}
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent className="space-y-3">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Clock className="w-4 h-4" />
-                  {event.time}
-                </div>
-                
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="w-4 h-4" />
-                  <span className="truncate">{event.location}</span>
-                </div>
-                
-                <div className="flex items-center justify-between pt-2 border-t">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Users className="w-4 h-4 text-primary" />
-                    <span className="font-semibold">{event.participants}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm font-semibold text-primary">
-                    <Trophy className="w-4 h-4" />
-                    {event.prize}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              <img 
+                src={event.image} 
+                alt={event.title}
+                className="w-full h-full object-cover aspect-[4/5] transition-transform duration-500 group-hover:scale-105"
+              />
+            </div>
           ))}
         </div>
       </section>
