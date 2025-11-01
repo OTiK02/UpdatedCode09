@@ -1,22 +1,26 @@
+import { useState } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, MapPin, Users, Clock, Trophy, Code, Music, Camera, Gamepad2, Brain, Rocket } from "lucide-react";
+import { Calendar, MapPin, Users, Clock, Trophy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import skyHighPoster from "@/assets/event-skyhigh-poster.jpg";
+import eventBanner from "@/assets/event-prayukti-banner.png";
 
 const EventsGallery = () => {
   const navigate = useNavigate();
+  const [selectedCategory, setSelectedCategory] = useState("All");
 
   const eventCategories = [
-    { icon: Trophy, label: "Competitions", color: "text-yellow-500" },
-    { icon: Code, label: "Hackathons", color: "text-blue-500" },
-    { icon: Music, label: "Cultural", color: "text-purple-500" },
-    { icon: Camera, label: "Photography", color: "text-pink-500" },
-    { icon: Gamepad2, label: "Gaming", color: "text-green-500" },
-    { icon: Brain, label: "Workshops", color: "text-orange-500" },
+    { label: "All", count: 0 },
+    { label: "Competitions", count: 0 },
+    { label: "Hackathons", count: 0 },
+    { label: "Cultural", count: 0 },
+    { label: "Photography", count: 0 },
+    { label: "Gaming", count: 0 },
+    { label: "Workshops", count: 0 },
   ];
 
   const galleryEvents = [
@@ -29,7 +33,7 @@ const EventsGallery = () => {
       category: "Competitions",
       participants: 45,
       prize: "₹75,000",
-      image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&q=80",
+      image: skyHighPoster,
     },
     {
       id: 2,
@@ -352,116 +356,157 @@ const EventsGallery = () => {
     },
   ];
 
+  // Calculate category counts
+  const categoriesWithCounts = eventCategories.map(cat => {
+    if (cat.label === "All") {
+      return { ...cat, count: galleryEvents.length };
+    }
+    return {
+      ...cat,
+      count: galleryEvents.filter(event => event.category === cat.label).length
+    };
+  });
+
+  // Filter events based on selected category
+  const filteredEvents = selectedCategory === "All" 
+    ? galleryEvents 
+    : galleryEvents.filter(event => event.category === selectedCategory);
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <div className="container mx-auto px-4 pt-24 pb-12">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Events <span className="gradient-text">Gallery</span>
+      {/* Hero Section */}
+      <section className="relative min-h-[600px] flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={eventBanner} 
+            alt="Graphic Era Events" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/95" />
+        </div>
+        
+        <div className="container relative z-10 px-4 py-24 text-center">
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in-up">
+            Graphic Era <span className="gradient-text">Events</span>
           </h1>
+          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+            Where Innovation meets Excellence — Join us for the most exciting technical festival showcasing cutting-edge technology, brilliant minds, and groundbreaking ideas.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            <Button 
+              size="lg" 
+              className="bg-gradient-primary hover:shadow-primary text-lg px-8"
+              onClick={() => document.getElementById('events-section')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              🎯 Explore Events
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline"
+              className="text-lg px-8 border-2"
+              onClick={() => navigate('/events')}
+            >
+              Register
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Event Details Section */}
+      <section id="events-section" className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            Event <span className="gradient-text">Details</span>
+          </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Explore 30+ exciting events across competitions, hackathons, workshops, and cultural festivals
+            Explore exciting competitions and challenges across all categories. Showcase your skills and compete for amazing prizes!
           </p>
         </div>
 
         {/* Category Filters */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
-          {eventCategories.map((category, index) => {
-            const IconComponent = category.icon;
-            return (
-              <Badge 
-                key={index}
-                variant="outline" 
-                className="px-4 py-2 cursor-pointer hover:bg-primary/10 transition-colors"
-              >
-                <IconComponent className={`w-4 h-4 mr-2 ${category.color}`} />
-                {category.label}
-              </Badge>
-            );
-          })}
+        <div className="flex flex-wrap justify-center gap-3 mb-8">
+          {categoriesWithCounts.map((category, index) => (
+            <Badge 
+              key={index}
+              variant={selectedCategory === category.label ? "default" : "outline"}
+              className={`px-4 py-2 cursor-pointer transition-all ${
+                selectedCategory === category.label 
+                  ? "bg-primary text-primary-foreground" 
+                  : "hover:bg-primary/10"
+              }`}
+              onClick={() => setSelectedCategory(category.label)}
+            >
+              {category.label} ({category.count})
+            </Badge>
+          ))}
+        </div>
+
+        {/* Status Bar */}
+        <div className="text-center mb-8 text-sm text-muted-foreground">
+          Selected: <span className="font-semibold text-foreground">{selectedCategory}</span> | 
+          Total Events: <span className="font-semibold text-foreground">{galleryEvents.length}</span> | 
+          Filtered: <span className="font-semibold text-foreground">{filteredEvents.length}</span>
         </div>
 
         {/* Events Grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {galleryEvents.map((event) => (
+          {filteredEvents.map((event) => (
             <Card 
               key={event.id} 
               className="group hover:shadow-xl transition-all duration-300 cursor-pointer hover-lift overflow-hidden"
               onClick={() => navigate('/events')}
             >
-              {event.id === 1 ? (
+              <div className="relative h-48 overflow-hidden">
                 <img 
-                  src={skyHighPoster} 
+                  src={event.image} 
                   alt={event.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
-              ) : (
-                <>
-                  <div className="relative h-48 overflow-hidden">
-                    <img 
-                      src={event.image} 
-                      alt={event.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute top-3 right-3">
-                      <Badge className="bg-primary/90 text-primary-foreground">
-                        {event.category}
-                      </Badge>
-                    </div>
+                <div className="absolute top-3 right-3">
+                  <Badge className="bg-primary/90 text-primary-foreground">
+                    {event.category}
+                  </Badge>
+                </div>
+              </div>
+              
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg line-clamp-2 group-hover:text-primary transition-colors">
+                  {event.title}
+                </CardTitle>
+                <CardDescription className="flex items-center gap-2 text-sm">
+                  <Calendar className="w-4 h-4" />
+                  {event.date}
+                </CardDescription>
+              </CardHeader>
+              
+              <CardContent className="space-y-3">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Clock className="w-4 h-4" />
+                  {event.time}
+                </div>
+                
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <MapPin className="w-4 h-4" />
+                  <span className="truncate">{event.location}</span>
+                </div>
+                
+                <div className="flex items-center justify-between pt-2 border-t">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Users className="w-4 h-4 text-primary" />
+                    <span className="font-semibold">{event.participants}</span>
                   </div>
-                  
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg line-clamp-2 group-hover:text-primary transition-colors">
-                      {event.title}
-                    </CardTitle>
-                    <CardDescription className="flex items-center gap-2 text-sm">
-                      <Calendar className="w-4 h-4" />
-                      {event.date}
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-3">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="w-4 h-4" />
-                      {event.time}
-                    </div>
-                    
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <MapPin className="w-4 h-4" />
-                      <span className="truncate">{event.location}</span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between pt-2 border-t">
-                      <div className="flex items-center gap-2 text-sm">
-                        <Users className="w-4 h-4 text-primary" />
-                        <span className="font-semibold">{event.participants}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm font-semibold text-primary">
-                        <Trophy className="w-4 h-4" />
-                        {event.prize}
-                      </div>
-                    </div>
-                  </CardContent>
-                </>
-              )}
+                  <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+                    <Trophy className="w-4 h-4" />
+                    {event.prize}
+                  </div>
+                </div>
+              </CardContent>
             </Card>
           ))}
         </div>
-
-        {/* CTA Section */}
-        <div className="mt-16 text-center">
-          <Button 
-            size="lg" 
-            onClick={() => navigate('/events')}
-            className="bg-gradient-primary hover:shadow-primary"
-          >
-            View Detailed Events Timeline
-          </Button>
-        </div>
-      </div>
+      </section>
 
       <Footer />
     </div>
